@@ -1,0 +1,8 @@
+{
+  "appId": "com.messivsronaldo.cointoss",
+  "appName": "Messi vs Ronaldo",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}

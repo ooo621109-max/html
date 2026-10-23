@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Messi vs Ronaldo Coin Toss</title>
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  body {
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    overflow-x: hidden;
+    background: #060d17 url("https://i1-thethao.vnecdn.net/2026/10/21/Ronaldo-va-Messi-1119-1792518901.jpg?w=1020&h=0&q=100&dpr=1&fit=crop&s=y60vFZFJEZbvVJZ8rhUHoQ") center/cover no-repeat fixed;
+  }
+
+  body::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(6, 13, 23, 0.45) 0%, rgba(3, 8, 15, 0.88) 100%);
+    z-index: 0;
+  }
+
+  .game-container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1000px;
+    padding: 20px 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    justify-content: space-between;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 5px;
+  }
+
+  .main-title {
+    font-size: clamp(28px, 6vw, 54px);
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 0 4px 15px rgba(0,0,0,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+  }
+
+  .title-messi {
+    color: #ffffff;
+    background: linear-gradient(180deg, #ffffff 30%, #75aadb 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 10px rgba(117,170,219,0.5));
+  }
+
+  .title-vs {
+    color: #ffcc00;
+    font-style: italic;
+    font-size: 0.8em;
+    filter: drop-shadow(0 0 10px rgba(255,204,0,0.8));
+  }
+
+  .title-ronaldo {
+    color: #ffffff;
+    background: linear-gradient(180deg, #ffffff 30%, #ff4b4b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 10px rgba(255,75,75,0.5));
+  }
+
+  .subtitle {
+    font-size: clamp(12px, 2.5vw, 16px);
+    color: #e0e6ed;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 600;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.9);
+    margin-top: 4px;
+  }
+
+  /* Live Odds Box (Chỉ hiển thị số nguyên) */
+  .live-odds-box {
+    margin-top: 10px;
+    background: rgba(10, 20, 32, 0.85);
+    border: 1px solid rgba(255, 204, 0, 0.4);
+    border-radius: 20px;
+    padding: 6px 20px;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+  }
+
+  .live-odds-title {
+    font-size: 11px;
+    font-weight: 900;
+    color: #ffcc00;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .pulse-dot {
+    width: 7px;
+    height: 7px;
+    background-color: #ff0044;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 8px #ff0044;
+    animation: pulse 1.2s infinite alternate;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 0.3; transform: scale(0.8); }
+    100% { opacity: 1; transform: scale(1.2); }
+  }
+
+  .live-odds-values {
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    margin-top: 2px;
+  }
+
+  .odds-m10 { color: #75aadb; }
+  .odds-cr7 { color: #ff6b6b; }
+
+  .scoreboard-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 700px;
+    margin: 15px 0;
+    gap: 20px;
+  }
+
+  .card {
+    flex: 1;
+    background: rgba(10, 20, 32, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 15px 10px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  }
+
+  .card-messi {
+    border: 2px solid #00a2ff;
+    box-shadow: 0 0 20px rgba(0, 162, 255, 0.3);
+  }
+
+  .card-ronaldo {
+    border: 2px solid #ff0055;
+    box-shadow: 0 0 20px rgba(255, 0, 85, 0.3);
+  }
+
+  .card-header-top {
+    position: absolute;
+    top: -45px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .card-messi .card-header-top { left: 10px; }
+  .card-ronaldo .card-header-top { right: 10px; flex-direction: row-reverse; }
+
+  .crown {
+    font-size: 24px;
+    filter: drop-shadow(0 2px 5px rgba(255, 215, 0, 0.8));
+  }
+
+  .player-avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 4px solid #ffcc00;
+    object-fit: cover;
+    box-shadow: 0 0 20px rgba(255, 204, 0, 0.6), 0 5px 15px rgba(0,0,0,0.8);
+    background: #000;
+  }
+
+  .player-name {
+    font-size: clamp(13px, 2.2vw, 17px);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 38px;
+  }
+
+  .player-tag {
+    font-size: 11px;
+    color: #a0b2c6;
+    font-weight: 700;
+    margin-bottom: 5px;
+  }
+
+  .score-val {
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 900;
+    line-height: 1;
+    margin: 6px 0;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  }
+
+  .title-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #d1dbe5;
+    font-weight: 700;
+  }
+
+  .game-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 10px 0;
+    width: 100%;
+  }
+
+  .coin-preview-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+    margin-bottom: 15px;
+  }
+
+  .side-banner {
+    flex: 1;
+    max-width: 220px;
+    background: rgba(10, 20, 32, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-align: center;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    line-height: 1.4;
+  }
+
+  .side-banner-messi {
+    color: #75aadb;
+    border-color: rgba(117, 170, 219, 0.4);
+  }
+
+  .side-banner-ronaldo {
+    color: #ff6b6b;
+    border-color: rgba(255, 107, 107, 0.4);
+  }
+
+  .scene {
+    width: 180px;
+    height: 180px;
+    perspective: 1000px;
+    margin: 10px 0;
+  }
+
+  .coin {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.1s linear;
+    cursor: pointer;
+  }
+
+  .coin-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border: 12px solid #e2a829;
+    box-shadow: 
+      0 0 0 2px #fef19c,
+      inset 0 0 0 3px #8e5b00,
+      inset 0 0 15px rgba(0, 0, 0, 0.8),
+      0 12px 30px rgba(0, 0, 0, 0.7);
+    background: radial-gradient(circle at 30% 25%, #fffde0 0%, #f7c942 35%, #d18f08 70%, #7a4a00 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .coin-face::before {
+    content: "";
+    position: absolute;
+    inset: 6px;
+    border: 2px dotted #704400;
+    border-radius: 50%;
+    box-shadow: inset 0 0 4px rgba(255, 255, 255, 0.6);
+  }
+
+  .coin-face::after {
+    content: "";
+    position: absolute;
+    inset: 12px;
+    border: 1.5px solid rgba(255, 245, 180, 0.8);
+    border-radius: 50%;
+  }
+
+  .coin-text-main {
+    font-size: 48px;
+    font-weight: 900;
+    color: #3b2200;
+    text-shadow: 
+      1px 1px 0px #ffe793, 
+      -1px -1px 0px #241400,
+      0px 3px 6px rgba(0, 0, 0, 0.5);
+    z-index: 2;
+    letter-spacing: 1px;
+    font-family: 'Impact', 'Arial Black', sans-serif;
+  }
+
+  .coin-text-sub {
+    font-size: 11px;
+    font-weight: 900;
+    color: #472a00;
+    letter-spacing: 3px;
+    z-index: 2;
+    text-shadow: 0 1px 1px rgba(255, 245, 180, 0.7);
+  }
+
+  .coin-face.back {
+    transform: rotateY(180deg);
+  }
+
+  @keyframes flipAnimation {
+    0% { transform: rotateY(var(--start-angle, 0deg)) translateY(0) scale(1); }
+    25% { transform: rotateY(calc(var(--start-angle, 0deg) + 540deg)) translateY(-120px) scale(1.15); }
+    65% { transform: rotateY(calc(var(--start-angle, 0deg) + 1800deg)) translateY(-40px) scale(1.05); }
+    100% { transform: rotateY(var(--end-angle, 1800deg)) translateY(0) scale(1); }
+  }
+
+  .coin.flipping {
+    animation: flipAnimation 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  }
+
+  .status-pill {
+    background: rgba(10, 20, 32, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 30px;
+    padding: 10px 30px;
+    font-weight: 800;
+    font-size: 16px;
+    letter-spacing: 1px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+    margin-top: 15px;
+    min-width: 220px;
+    text-align: center;
+    backdrop-filter: blur(8px);
+  }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    width: 100%;
+    max-width: 650px;
+    margin-top: 20px;
+  }
+
+  .btn {
+    padding: 14px 24px;
+    border: none;
+    border-radius: 14px;
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+    text-transform: uppercase;
+    color: #ffffff;
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(0,0,0,0.6);
+  }
+
+  .btn:active {
+    transform: translateY(1px);
+  }
+
+  .btn-toss {
+    background: linear-gradient(135deg, #00e676 0%, #00897b 100%);
+    border: 1px solid #66ffa6;
+    color: #052411;
+    font-size: 16px;
+    padding: 14px 32px;
+  }
+
+  .btn-auto {
+    background: linear-gradient(135deg, #00b0ff 0%, #0056b3 100%);
+    border: 1px solid #80d8ff;
+  }
+
+  .btn-reset {
+    background: linear-gradient(135deg, #aa00ff 0%, #4a148c 100%);
+    border: 1px solid #ea80fc;
+  }
+
+  .btn-sound {
+    background: linear-gradient(135deg, #546e7a 0%, #263238 100%);
+    border: 1px solid #90a4ae;
+  }
+
+  .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 800px;
+    font-size: 11px;
+    color: #b0bec5;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-top: 20px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+  }
+
+  @media (max-width: 600px) {
+    .coin-preview-wrapper { flex-direction: column; gap: 10px; }
+    .side-banner { max-width: 90%; }
+    .scene { width: 140px; height: 140px; }
+    .player-avatar { width: 70px; height: 70px; }
+    .player-name { margin-top: 25px; }
+    .coin-text-main { font-size: 36px; }
+    .controls { gap: 8px; }
+    .btn { padding: 10px 16px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="game-container">
+  <div class="header">
+    <div class="main-title">
+      <span class="title-messi">MESSI</span>
+      <span class="title-vs">VS</span>
+      <span class="title-ronaldo">RONALDO</span>
+    </div>
+    <div class="subtitle">TWO LEGENDS. ONE COIN. WHO WILL WIN?</div>
+
+    <!-- Live Odds Display Section -->
+    <div class="live-odds-box">
+      <div class="live-odds-title">
+        <span class="pulse-dot"></span> LIVE ODDS: M10 - CR7
+      </div>
+      <div class="live-odds-values">
+        <span class="odds-m10" id="odds-messi-val">50%</span> - <span class="odds-cr7" id="odds-ronaldo-val">50%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="scoreboard-container">
+    <div class="card card-messi">
+      <div class="card-header-top">
+        <span class="crown">👑</span>
+        <img class="player-avatar" src="https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c8/Leo_Messi_Argentina_v_Egypt_7_July_2026-1.jpg/250px-Leo_Messi_Argentina_v_Egypt_7_July_2026-1.jpg" alt="Messi">
+      </div>
+      <div class="player-name">LIONEL MESSI</div>
+      <div class="player-tag">M10</div>
+      <div class="score-val" id="score-messi">0</div>
+      <div class="title-label">THE MAGICIAN</div>
+    </div>
+
+    <div class="card card-ronaldo">
+      <div class="card-header-top">
+        <span class="crown">👑</span>
+        <img class="player-avatar" src="https://thumb.wikimedia.org/wikipedia/commons/thumb/2/26/Cristiano_Ronaldo_Croatia_v_Portugal_2_July_2026-075_%28cropped%29.jpg/250px-Cristiano_Ronaldo_Croatia_v_Portugal_2_July_2026-075_%28cropped%29.jpg" alt="Ronaldo">
+      </div>
+      <div class="player-name">CRISTIANO RONALDO</div>
+      <div class="player-tag">CR7</div>
+      <div class="score-val" id="score-ronaldo">0</div>
+      <div class="title-label">THE GOAT</div>
+    </div>
+  </div>
+
+  <div class="game-center">
+    <div class="coin-preview-wrapper">
+      <div class="side-banner side-banner-messi">
+        Subscribe + Comment M10<br>= +1% Coin Odds for Messi
+      </div>
+
+      <div class="scene">
+        <div class="coin" id="coin">
+          <div class="coin-face front">
+            <span class="coin-text-main">M10</span>
+            <span class="coin-text-sub">MESSI</span>
+          </div>
+          <div class="coin-face back">
+            <span class="coin-text-main">CR7</span>
+            <span class="coin-text-sub">RONALDO</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="side-banner side-banner-ronaldo">
+        Subscribe + Comment CR7<br>= +1% Coin Odds for Ronaldo
+      </div>
+    </div>
+
+    <div class="status-pill" id="status-text">Ready for kickoff?</div>
+  </div>
+
+  <div class="controls">
+    <button class="btn btn-toss" id="btn-toss">🪙 TOSS COIN</button>
+    <button class="btn btn-auto" id="btn-auto">▶ AUTO OFF</button>
+    <button class="btn btn-reset" id="btn-reset">↺ RESET</button>
+    <button class="btn btn-sound" id="btn-sound">🔊 SOUND ON</button>
+  </div>
+
+  <div class="footer">
+    <div class="trophy-badge">🏆 PLAY · TOSS · WIN</div>
+    <div>VOICE EFFECT: "QUÉ MIRÁS, BOBO!" / "SIUUU!"</div>
+  </div>
+</div>
+
+<script>
+  let audioCtx = null;
+
+  function initAudio() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+  }
+
+  function playSynthFlip() {
+    if (!isSoundOn) return;
+    initAudio();
+    try {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.15);
+      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.15);
+    } catch (e) {}
+  }
+
+  function playSynthWin() {
+    if (!isSoundOn) return;
+    initAudio();
+    try {
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(523.25, now);
+      osc.frequency.setValueAtTime(659.25, now + 0.1);
+      osc.frequency.setValueAtTime(783.99, now + 0.2);
+      gain.gain.setValueAtTime(0.15, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.4);
+    } catch (e) {}
+  }
+
+  const coin = document.getElementById("coin");
+  const statusText = document.getElementById("status-text");
+  const scoreMessiEl = document.getElementById("score-messi");
+  const scoreRonaldoEl = document.getElementById("score-ronaldo");
+
+  const oddsMessiValEl = document.getElementById("odds-messi-val");
+  const oddsRonaldoValEl = document.getElementById("odds-ronaldo-val");
+
+  const btnToss = document.getElementById("btn-toss");
+  const btnAuto = document.getElementById("btn-auto");
+  const btnReset = document.getElementById("btn-reset");
+  const btnSound = document.getElementById("btn-sound");
+
+  let messiScore = 0;
+  let ronaldoScore = 0;
+  let isRonaldoSide = false;
+  let isBusy = false;
+  let isAuto = false;
+  let isSoundOn = true;
+  let autoTimer = null;
+
+  // Lấy số nguyên ngẫu nhiên nguyên vẹn (không thập phân) từ min đến max
+  function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  // Cập nhật chỉ số hiển thị Odds bằng số nguyên ngẫu nhiên (40% -> 60%)
+  function updateLiveOddsDisplay() {
+    const messiOddsInt = getRandomInt(40, 60);
+    const ronaldoOddsInt = 100 - messiOddsInt;
+    oddsMessiValEl.textContent = messiOddsInt + "%";
+    oddsRonaldoValEl.textContent = ronaldoOddsInt + "%";
+  }
+
+  // Cập nhật Odds ngẫu nhiên mỗi 3 giây
+  setInterval(updateLiveOddsDisplay, 3000);
+
+  function playVoiceEffect(type) {
+    if (!isSoundOn) return;
+    playSynthWin();
+
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance();
+
+      if (type === 'messi') {
+        utterance.text = "Qué mirás, bobo!";
+        utterance.lang = "es-AR";
+        utterance.pitch = 0.9;
+        utterance.rate = 1.1;
+      } else if (type === 'ronaldo') {
+        utterance.text = "SIUUU!";
+        utterance.lang = "pt-PT";
+        utterance.pitch = 1.4;
+        utterance.rate = 0.9;
+      }
+
+      window.speechSynthesis.speak(utterance);
+    }
+  }
+
+  function tossCoin() {
+    if (isBusy) return;
+    initAudio();
+    isBusy = true;
+    btnToss.disabled = true;
+
+    // Tỷ lệ ngẫu nhiên 50/50 chuẩn không bị ảnh hưởng bởi hiển thị
+    const isRonaldoWin = Math.random() >= 0.5;
+    const currentAngle = isRonaldoSide ? 180 : 0;
+    const targetAngle = currentAngle + 1800 + (isRonaldoWin ? (isRonaldoSide ? 0 : 180) : (isRonaldoSide ? 180 : 0));
+
+    coin.style.setProperty('--start-angle', `${currentAngle}deg`);
+    coin.style.setProperty('--end-angle', `${targetAngle}deg`);
+
+    coin.classList.remove("flipping");
+    void coin.offsetWidth;
+    coin.classList.add("flipping");
+
+    statusText.textContent = "Flipping...";
+    playSynthFlip();
+
+    setTimeout(() => {
+      isRonaldoSide = isRonaldoWin;
+      coin.classList.remove("flipping");
+      coin.style.transform = `rotateY(${isRonaldoWin ? 180 : 0}deg)`;
+
+      if (isRonaldoWin) {
+        ronaldoScore++;
+        scoreRonaldoEl.textContent = ronaldoScore;
+        statusText.textContent = "SIUUU! CR7 WINS THE TOSS!";
+        playVoiceEffect('ronaldo');
+      } else {
+        messiScore++;
+        scoreMessiEl.textContent = messiScore;
+        statusText.textContent = "QUÉ MIRÁS, BOBO! M10 WINS!";
+        playVoiceEffect('messi');
+      }
+
+      isBusy = false;
+      btnToss.disabled = false;
+
+      if (isAuto) {
+        autoTimer = setTimeout(tossCoin, 1800);
+      }
+    }, 1600);
+  }
+
+  btnToss.addEventListener("click", tossCoin);
+  coin.addEventListener("click", tossCoin);
+
+  btnAuto.addEventListener("click", () => {
+    initAudio();
+    isAuto = !isAuto;
+    btnAuto.textContent = isAuto ? "⏸ AUTO ON" : "▶ AUTO OFF";
+    if (isAuto && !isBusy) tossCoin();
+    if (!isAuto) clearTimeout(autoTimer);
+  });
+
+  btnReset.addEventListener("click", () => {
+    initAudio();
+    isAuto = false;
+    clearTimeout(autoTimer);
+    btnAuto.textContent = "▶ AUTO OFF";
+    messiScore = 0;
+    ronaldoScore = 0;
+    isRonaldoSide = false;
+    scoreMessiEl.textContent = "0";
+    scoreRonaldoEl.textContent = "0";
+    coin.classList.remove("flipping");
+    coin.style.transform = "rotateY(0deg)";
+    statusText.textContent = "Ready for kickoff?";
+    btnToss.disabled = false;
+    isBusy = false;
+  });
+
+  btnSound.addEventListener("click", () => {
+    initAudio();
+    isSoundOn = !isSoundOn;
+    btnSound.textContent = isSoundOn ? "🔊 SOUND ON" : "🔇 SOUND OFF";
+  });
+</script>
+</body>
+</html>
